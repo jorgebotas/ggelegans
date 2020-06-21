@@ -51,7 +51,7 @@ whitetheme <- function() {
 ```{r include=FALSE}
 library(ggplot2)
 
-gwas.raw <- read.csv("results.csv")
+gwas.raw <- read.csv("results.csv") # Replace with path to already filtered SNPs
 ```
 
 
