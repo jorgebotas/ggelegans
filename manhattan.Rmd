@@ -1,0 +1,99 @@
+---
+title: "Manhattan Plot"
+subtitle: "SNPs"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    code_folding: show
+    theme: sandstone
+---
+
+
+
+
+### Theme
+```{r}
+whitetheme <- function() {
+  theme_bw()+theme(
+    plot.margin = margin(20,10,10,10),
+    text = element_text(family="Helvetica", colour="black", face="plain"),
+    
+    plot.title = element_text(size=13, face="bold"),
+    plot.subtitle = element_text(size=11, colour="black"),
+    plot.caption = element_text(size=9, colour="black"),
+    
+    # PANEL
+    panel.border = element_rect(fill=NA, colour = "black", size=0.7),
+    
+    # LEGEND
+    legend.text = element_text(size=11),
+    legend.title = element_blank(),
+    legend.position = "top",
+    legend.background = element_blank(),
+    
+    #AXIS
+    axis.text.x=element_text(size=11, colour="black", face="plain"),
+    axis.text.y = element_text(size=11, colour="black", face="plain"),
+    axis.title.y = element_text(vjust=2),
+    axis.title.x = element_text(vjust=-0.5),
+    panel.grid=element_blank(),
+    axis.line = element_line(color="black", size=0.25)
+  )
+}
+
+
+```
+
+
+### Packages and data
+```{r include=FALSE}
+library(ggplot2)
+
+gwas.raw <- read.csv("~/Desktop/results.csv")
+```
+
+
+### Prepare data
+```{r}
+gwas <- data.frame(chr=gwas.raw$Chromosome, pos=gwas.raw$Position, pval=gwas.raw$P.value)
+gwas <- gwas[order(gwas$chr),]
+
+nCHR <- length(unique(gwas$chr))
+gwas$posCum <- NA
+s <- 0
+nbp <- c()
+chr.pos <- c()
+for (i in unique(gwas$chr)){
+  nbp[i] <- max(gwas[gwas$chr == i,]$pos)
+  gwas[gwas$chr == i,"posCum"] <- gwas[gwas$chr == i,"pos"] + s
+  s <- s + nbp[i]
+  
+  chr.pos[i] <- (min(gwas[gwas$chr == i,"posCum"]) + max(gwas[gwas$chr == i,"posCum"])) / 2
+}
+
+chr.pos <- data.frame(chr=unique(gwas$chr), pos=chr.pos)
+x.limits <- c(min(gwas$posCum), max(gwas$posCum))
+```
+
+
+### Plot
+```{r}
+colors = c("#264653", "#2a9d8f","#e9c46a","#f4a261","#e76f51")
+colors = c("#AA4465", "#F7BFB4", "#A8A4E0", "#DAEDBD", "#7FB285")
+hline = 4
+
+
+ggplot(data=gwas, aes(x=posCum, y=-log10(pval), color=as.factor(chr)))+
+  geom_point() +
+  whitetheme()+
+  scale_x_continuous(label=chr.pos$chr, breaks=chr.pos$pos, 
+                     limits=x.limits, expand=c(0,0)) +
+  scale_y_continuous(expand=c(0,0), limits=c(-.02,10.02), breaks=seq(0,10,1)) + 
+  scale_color_manual(values=colors) +
+  geom_hline(yintercept = hline, linetype = "dashed", lwd = 0.5)+
+  labs(x="Chromosome",
+       y=expression(paste("-log"["10"],"(",italic("p"), ")")))+
+  theme(legend.position = "None")
+```
