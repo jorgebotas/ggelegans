@@ -1,7 +1,8 @@
 # ggelegans
 Useful and elegant R plots using ggplot2  
-Plots are fully customizable in comparison to tightly-made R packages:  
-  Freely edit the "theme" chunk in .Rmd files
+* Code is intended to be helpful, not for a MOMA expo. Please, do not expect optimal efficiency and tidiness
+* Plots are fully customizable in comparison to tightly-made R packages:  
+  * Freely edit the "theme" chunk in .Rmd files
 
 
 
