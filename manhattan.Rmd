@@ -57,10 +57,14 @@ gwas.raw <- read.csv("~/Desktop/results.csv")
 
 ### Prepare data
 ```{r}
+# Creat dataframe for representation
 gwas <- data.frame(chr=gwas.raw$Chromosome, pos=gwas.raw$Position, pval=gwas.raw$P.value)
+# Order by chromosome number
 gwas <- gwas[order(gwas$chr),]
 
 nchr <- length(unique(gwas$chr))
+
+# Calculate cumulative position in bp
 gwas$posCum <- NA
 s <- 0
 nbp <- c()
@@ -73,7 +77,9 @@ for (i in unique(gwas$chr)){
   chr.pos[i] <- (min(gwas[gwas$chr == i,"posCum"]) + max(gwas[gwas$chr == i,"posCum"])) / 2
 }
 
+# Chromosome position dataframe
 chr.pos <- data.frame(chr=unique(gwas$chr), pos=chr.pos)
+# x-axis limits
 x.limits <- c(min(gwas$posCum), max(gwas$posCum))
 ```
 
@@ -84,6 +90,9 @@ x.limits <- c(min(gwas$posCum), max(gwas$posCum))
 colors <- rep(c("#5a5a5a", "#b2b2b2"), ceiling(nchr / 2))
 # Colorful option (comment out for black and white)
 colors <- c("#AA4465", "#F7BFB4", "#A8A4E0", "#DAEDBD", "#7FB285")
+
+# Horizontal line for p-value cutoff (-log10)
+# Default 10^-4 >>> -log10(10^-4) = 4
 hline = 4
 
 
@@ -97,5 +106,5 @@ ggplot(data=gwas, aes(x=posCum, y=-log10(pval), color=as.factor(chr)))+
   geom_hline(yintercept = hline, linetype = "dashed", lwd = 0.5)+
   labs(x="Chromosome",
        y=expression(paste("-log"["10"],"(",italic("p"), ")")))+
-  theme(legend.position = "None")
+  theme(legend.position = "None") # Remove legend
 ```
