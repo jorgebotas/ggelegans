@@ -60,7 +60,7 @@ gwas.raw <- read.csv("~/Desktop/results.csv")
 gwas <- data.frame(chr=gwas.raw$Chromosome, pos=gwas.raw$Position, pval=gwas.raw$P.value)
 gwas <- gwas[order(gwas$chr),]
 
-nCHR <- length(unique(gwas$chr))
+nchr <- length(unique(gwas$chr))
 gwas$posCum <- NA
 s <- 0
 nbp <- c()
@@ -80,8 +80,10 @@ x.limits <- c(min(gwas$posCum), max(gwas$posCum))
 
 ### Plot
 ```{r}
-colors = c("#264653", "#2a9d8f","#e9c46a","#f4a261","#e76f51")
-colors = c("#AA4465", "#F7BFB4", "#A8A4E0", "#DAEDBD", "#7FB285")
+# Black and white option
+colors <- rep(c("#5a5a5a", "#b2b2b2"), ceiling(nchr / 2))
+# Colorful option (comment out for black and white)
+colors <- c("#AA4465", "#F7BFB4", "#A8A4E0", "#DAEDBD", "#7FB285")
 hline = 4
 
 
