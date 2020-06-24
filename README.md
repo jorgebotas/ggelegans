@@ -12,4 +12,13 @@ R markdown available at manhattan.Rmd
 * Black and white option available
 * Demo plot:
 
-![](images/manhattan.png)
+![](images/manhattan.tiff)
+
+
+## Multiple Bar Plots
+R markdown available at barplot.Rmd  
+* Colors can be changed by modifying the `colors` variable
+* Generate multiple barplots (or single one) representing mean�s.e.
+* Demo plot using SNP data (not available):
+
+![](images/barplot.tiff)

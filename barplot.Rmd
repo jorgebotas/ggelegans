@@ -1,0 +1,131 @@
+---
+title: "Manhattan Plot"
+subtitle: "SNPs"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    code_folding: show
+    theme: sandstone
+---
+
+
+
+
+### Theme
+```{r}
+whitetheme <- function() {
+  theme_bw()+theme(
+    plot.margin = margin(20,10,10,10),
+    text = element_text(family="Helvetica", colour="black", face="plain"),
+    
+    plot.title = element_text(size=13, face="bold"),
+    plot.subtitle = element_text(size=11, colour="black"),
+    plot.caption = element_text(size=9, colour="black"),
+    
+    # PANEL
+    panel.border = element_rect(fill=NA, colour = "black", size=0.7),
+    
+    # LEGEND
+    legend.text = element_text(size=11),
+    legend.title = element_blank(),
+    legend.position = "top",
+    legend.background = element_blank(),
+    
+    #AXIS
+    axis.text.x=element_text(size=11, colour="black", face="plain"),
+    axis.text.y = element_text(size=11, colour="black", face="plain"),
+    axis.title.y = element_text(vjust=2),
+    axis.title.x = element_text(vjust=-0.5),
+    panel.grid=element_blank(),
+    axis.line = element_line(color="black", size=0.25)
+  )
+}
+
+
+```
+
+
+### Packages and data
+```{r include=FALSE}
+library(ggplot2)
+
+# REPLACE with path to file to results in csv format
+results <- read.csv("results.csv")
+```
+
+
+### Prepare data
+```{r}
+colors <- c("#7CA2DE", "#EB6F99", "#CBDFBD", "#F19C79", "#AA9DFB")
+bases.all <- c("Blank", "A", "C", "G", "T")
+names(colors) <- bases.all
+
+#### SELECT SNPS TO BE RENDERED TO IMAGES
+snps <- colnames(results)[3:length(colnames(results))]
+snps <- snps[10:15]
+
+
+
+
+for (snp in snps){
+  snp.rawdata <- data.frame(LP=results$LP, snp=results[,snp])
+  # Replace "" with "Blank"
+  snp.rawdata$snp <- as.character(snp.rawdata$snp)
+  snp.rawdata[snp.rawdata$snp=="",]$snp <- "Blank"
+  snp.rawdata$snp <- as.factor(snp.rawdata$snp)
+  
+  ###### TITLE ######
+  title <- paste("LP in", snp)
+  
+  bases <- unique(snp.rawdata$snp)
+  bases <- intersect(bases.all, bases)
+  
+  # Calculate mean and standard error for plotting
+  means <- sapply(bases, function(b) mean(snp.rawdata[snp.rawdata$snp == b, "LP"]))
+  sterr <- sapply(bases, function(b) {
+    selected <- snp.rawdata[snp.rawdata$snp == b, "LP"]
+    stdev <- sd(selected)
+    n <- length(selected)
+    return(stdev / sqrt(n))
+    })
+  max <- max(means+sterr, na.rm=TRUE)
+  snp.data <- data.frame(base=bases, mean=means, sterr=sterr)
+  
+  barplot <- ggplot(data=snp.data, aes(x=base, y=mean, fill=base))+
+                geom_bar(position=position_dodge(), stat="identity")+
+                geom_errorbar(aes(ymin=mean-sterr, ymax=mean+sterr),
+                              width=.05,
+                              size=.4,
+                              position=position_dodge(.9))+
+                scale_fill_manual(values=colors)+
+                whitetheme() +
+                scale_y_continuous(expand=c(0,0), limits=c(-.01, max+.1), breaks=seq(0,max+0.26,0.25))+
+                xlim(bases)+
+                labs(title=title,
+                     x="Allele"
+                     )+
+                theme(axis.title.y=element_blank(),
+                      legend.position="none")
+  print(barplot)
+  
+  
+  ###### SAVE PLOTS ######
+  width = 15
+  height = 10
+  
+  barplot <- barplot + theme(plot.title=element_blank())
+  
+  # Create dir for plots
+  dir.create("barplots/", showWarnings = FALSE)
+  
+  ggsave(filename = paste0("barplots/", snp, ".tiff"),
+         plot = barplot,
+         device = "tiff",
+         width = width,
+         height = height,
+         units = "cm")
+}
+
+```

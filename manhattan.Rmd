@@ -51,14 +51,18 @@ whitetheme <- function() {
 ```{r include=FALSE}
 library(ggplot2)
 
+<<<<<<< HEAD
+gwas.raw <- read.csv("results.csv")
+=======
 gwas.raw <- read.csv("results.csv") # Replace with path to already filtered SNPs
+>>>>>>> dde0dfe3b3bf8d68b9d6495bd54f5702fc0cefec
 ```
 
 
 ### Prepare data
 ```{r}
 # Creat dataframe for representation
-gwas <- data.frame(chr=gwas.raw$Chromosome, pos=gwas.raw$Position, pval=gwas.raw$P.value)
+gwas <- data.frame(snp=gwas.raw$SNP, chr=gwas.raw$Chromosome, pos=gwas.raw$Position, pval=gwas.raw$P.value)
 # Order by chromosome number
 gwas <- gwas[order(gwas$chr),]
 
@@ -83,6 +87,21 @@ chr.pos <- data.frame(chr=unique(gwas$chr), pos=chr.pos)
 x.limits <- c(min(gwas$posCum), max(gwas$posCum))
 ```
 
+### Annotation
+```{r}
+require(ggrepel)
+# Define SNPs to be annotated
+snps <- unique(gwas$snp)
+pval5 <- gwas[-log10(gwas$pval)>5.5,]
+pval5 <- pval5[complete.cases(pval5$snp),]
+snps <- pval5$snp[11:23]
+snp.annotate <- gwas[gwas$snp %in% snps,]
+
+##### REPLACE WITH PROPER ANNOTATION LABELS #####
+snp.annotate$annotation <- snp.annotate$snp
+```
+
+
 
 ### Plot
 ```{r}
@@ -96,15 +115,29 @@ colors <- c("#AA4465", "#F7BFB4", "#A8A4E0", "#DAEDBD", "#7FB285")
 hline = 4
 
 
-ggplot(data=gwas, aes(x=posCum, y=-log10(pval), color=as.factor(chr)))+
-  geom_point() +
-  whitetheme()+
-  scale_x_continuous(label=chr.pos$chr, breaks=chr.pos$pos, 
-                     limits=x.limits, expand=c(0,0)) +
-  scale_y_continuous(expand=c(0,0), limits=c(-.02,10.02), breaks=seq(0,10,1)) + 
-  scale_color_manual(values=colors) +
-  geom_hline(yintercept = hline, linetype = "dashed", lwd = 0.5)+
-  labs(x="Chromosome",
-       y=expression(paste("-log"["10"],"(",italic("p"), ")")))+
-  theme(legend.position = "None") # Remove legend
+<<<<<<< HEAD
+plot <- ggplot(data=gwas, aes(x=posCum, y=-log10(pval), color=as.factor(chr)))+
+          geom_point() +
+          whitetheme()+
+          scale_x_continuous(label=chr.pos$chr, breaks=chr.pos$pos, 
+                             limits=x.limits, expand=c(0,0)) +
+          scale_y_continuous(expand=c(0,0), limits=c(-.02,10.02), breaks=seq(0,10,1)) + 
+          scale_color_manual(values=colors) +
+          geom_hline(yintercept = hline, linetype = "dashed", lwd = 0.5)+
+          labs(x="Chromosome",
+               y=expression(paste("-log"["10"],"(",italic("p"), ")")))+
+          theme(legend.position = "None")+ # Remove legend
+          geom_label_repel(data=snp.annotate, aes(label=annotation), size=2)+
+          geom_point(data=snp.annotate, color="black")
+plot
+```
+
+### Save plot
+```{r}
+ggsave(filename = "manhattan.tiff",
+       plot = plot,
+       device = "tiff",
+       width = width,
+       height = height,
+       units = "cm")
 ```
