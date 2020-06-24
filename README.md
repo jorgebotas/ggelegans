@@ -10,6 +10,7 @@ Useful and elegant R plots using ggplot2
 R markdown available at manhattan.Rmd  
 * Colors can be changed by modifying the `colors` variable
 * Black and white option available
+* Optional annotation using ggrepel
 * Demo plot:
 
 ![](images/manhattan.tiff)
