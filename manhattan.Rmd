@@ -51,11 +51,8 @@ whitetheme <- function() {
 ```{r include=FALSE}
 library(ggplot2)
 
-<<<<<<< HEAD
-gwas.raw <- read.csv("results.csv")
-=======
+
 gwas.raw <- read.csv("results.csv") # Replace with path to already filtered SNPs
->>>>>>> dde0dfe3b3bf8d68b9d6495bd54f5702fc0cefec
 ```
 
 
@@ -115,7 +112,6 @@ colors <- c("#AA4465", "#F7BFB4", "#A8A4E0", "#DAEDBD", "#7FB285")
 hline = 4
 
 
-<<<<<<< HEAD
 plot <- ggplot(data=gwas, aes(x=posCum, y=-log10(pval), color=as.factor(chr)))+
           geom_point() +
           whitetheme()+

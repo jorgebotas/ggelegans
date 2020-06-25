@@ -1,5 +1,5 @@
 ---
-title: "Manhattan Plot"
+title: "Multiple Bar Plots"
 subtitle: "SNPs"
 output:
   html_document:
