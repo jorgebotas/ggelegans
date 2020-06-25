@@ -10,6 +10,7 @@ Useful and elegant R plots using ggplot2
 R markdown available at manhattan.Rmd  
 * Colors can be changed by modifying the `colors` variable
 * Black and white option available
+* Optional annotation using ggrepel
 * Demo plot:
 
 ![](images/manhattan.tiff)
@@ -18,7 +19,7 @@ R markdown available at manhattan.Rmd
 ## Multiple Bar Plots
 R markdown available at barplot.Rmd  
 * Colors can be changed by modifying the `colors` variable
-* Generate multiple barplots (or single one) representing mean�s.e.
+* Generate multiple barplots (or single one) representing mean±s.e.
 * Demo plot using SNP data (not available):
 
 ![](images/barplot.tiff)
